@@ -1,0 +1,12 @@
+{
+  "name": "artkerko",
+  "version": "1.0.0",
+  "description": "A site that searches art over different public APIs",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"Building...\"",
+    "test": "echo \"Running tests...\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
