@@ -1,34 +1,23 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const searchButton = document.getElementById('searchButton');
-    const searchInput = document.getElementById('searchInput');
-    const resultsContainer = document.getElementById('resultsContainer');
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+const port = process.env.PORT || 8080;
 
-    searchButton.addEventListener('click', () => {
-        const query = searchInput.value;
-        if (query) {
-            fetchDataFromAPIs(query);
-        }
-    });
+app.use(express.static('public'));
 
-    async function fetchDataFromAPIs(query) {
-        try {
-            const api1Response = await fetch(`https://api1.example.com/search?q=${query}`);
-            const api2Response = await fetch(`https://api2.example.com/search?q=${query}`);
-            const api1Data = await api1Response.json();
-            const api2Data = await api2Response.json();
-
-            displayResults(api1Data, api2Data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+app.get('/search', async (req, res) => {
+    const query = req.query.query;
+    try {
+        const apiResponses = await Promise.all([
+            fetch(`https://api1.example.com/search?q=${query}`).then(res => res.json()),
+            fetch(`https://api2.example.com/search?q=${query}`).then(res => res.json())
+        ]);
+        res.json(apiResponses);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from APIs' });
     }
+});
 
-    function displayResults(api1Data, api2Data) {
-        resultsContainer.innerHTML = `
-            <h2>API 1 Results</h2>
-            <pre>${JSON.stringify(api1Data, null, 2)}</pre>
-            <h2>API 2 Results</h2>
-            <pre>${JSON.stringify(api2Data, null, 2)}</pre>
-        `;
-    }
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
