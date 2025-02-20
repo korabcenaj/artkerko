@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Express App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Express App</h1>
+    </header>
+    <main>
+        <form id="searchForm">
+            <input type="text" id="query" placeholder="Search..." required>
+            <button type="submit">Search</button>
+        </form>
+        <div id="results"></div>
+    </main>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch(`/search?query=${query}`);
+                const data = await response.json();
+                console.log(data);
+                resultsDiv.innerHTML = formatResults(data);
+            } catch (error) {
+                resultsDiv.innerHTML = 'Error fetching data';
+            }
+        });
+
+        function formatResults  (data) {
+            if (!Array.isArray(data)) {
+                return 'Asgje sdoli';
+            }
+
+            return data.map(result => {
+                const title = result.title || result.objectName || 'No title';
+                const description = result.description || result.artistDisplayName || 'No description';
+                const imageUrl = result.primaryImage || '';
+
+                return `
+                    <div class="result-item">
+                        <h3>${title}</h3>
+                        <p>${description}</p>
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${title}" />` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
